@@ -1,5 +1,5 @@
 #
-# Cookbook Name:: jungledisk
+# Cookbook Name:: driveclient
 # Recipe:: default
 #
 # Copyright 2011, Rackspace Hosting
@@ -16,3 +16,50 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+include_recipe "rackspace"
+include_recipe "driveclient::repo"
+
+case node[:platform]
+  when "redhat", "centos"
+    package "driveclient"
+  when "ubuntu", "debian"
+    rackspace_apt "driveclient" do
+      action :install
+    end
+end
+
+service "driveclient" do
+  supports :restart => true
+  action :enable
+end
+
+template node[:jungledisk][:driveclient][:bootstrapfile] do
+  source "bootstrap.json.erb"
+  owner  "driveclient"
+  group  "driveclient"
+  mode   "0600"
+  variables(
+    :setup => true
+  )
+  not_if "grep 'Registered' |grep 'true'"
+  notifies :restart, resources(:service => "driveclient")
+end
+
+log "Sleeping #{node[:jungledisk][:driveclient][:sleep]}s to wait for Quattro registration."
+ruby_block "Sleeping #{node[:jungledisk][:driveclient][:sleep]}s" do
+  block do
+    sleep(node[:jungledisk][:driveclient][:sleep])
+  end
+end
+
+template node[:jungledisk][:driveclient][:bootstrapfile] do
+  source "bootstrap.json.erb"
+  owner  "driveclient"
+  group  "driveclient"
+  mode   "0600"
+  variables(
+    :setup => false
+  )
+  not_if "grep 'Registered' |grep 'true'"
+end
