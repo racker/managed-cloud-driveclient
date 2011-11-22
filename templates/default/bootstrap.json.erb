@@ -1,0 +1,10 @@
+{
+  "ApiHostName": "<%= node[:jungledisk][:quattro][:apihostname] %>",
+  "Username": "<%= node[:jungledisk][:quattro][:username] %>",
+<% if @setup do %>
+  "Password": "<%= node[:jungledisk][:quattro][:password] %>",
+  "AgentKey": "",
+  "AccountId": "<%= node[:jungledisk][:quattro][:accountid] %>",
+<% end %>
+  "IsRegistered": false,
+}
