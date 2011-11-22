@@ -1,10 +1,10 @@
 {
-  "ApiHostName": "<%= node[:jungledisk][:quattro][:apihostname] %>",
-  "Username": "<%= node[:jungledisk][:quattro][:username] %>",
+  "ApiHostName": "<%= node[:driveclient][:apihostname] %>",
+  "Username": "<%= node[:driveclient][:username] %>",
 <% if @setup do %>
-  "Password": "<%= node[:jungledisk][:quattro][:password] %>",
+  "Password": "<%= node[:driveclient][:password] %>",
   "AgentKey": "",
-  "AccountId": "<%= node[:jungledisk][:quattro][:accountid] %>",
+  "AccountId": "<%= node[:driveclient][:accountid] %>",
 <% end %>
   "Https" : true,
   "IsRegistered": false

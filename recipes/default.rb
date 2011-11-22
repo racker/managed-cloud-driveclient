@@ -34,7 +34,7 @@ service "driveclient" do
   action :enable
 end
 
-template node[:jungledisk][:driveclient][:bootstrapfile] do
+template node[:driveclient][:bootstrapfile] do
   source "bootstrap.json.erb"
   owner  "driveclient"
   group  "driveclient"
@@ -46,14 +46,14 @@ template node[:jungledisk][:driveclient][:bootstrapfile] do
   notifies :restart, resources(:service => "driveclient")
 end
 
-log "Sleeping #{node[:jungledisk][:driveclient][:sleep]}s to wait for Quattro registration."
-ruby_block "Sleeping #{node[:jungledisk][:driveclient][:sleep]}s" do
+log "Sleeping #{node[:driveclient][:sleep]}s to wait for Quattro registration."
+ruby_block "Sleeping #{node[:driveclient][:sleep]}s" do
   block do
-    sleep(node[:jungledisk][:driveclient][:sleep])
+    sleep(node[:driveclient][:sleep])
   end
 end
 
-template node[:jungledisk][:driveclient][:bootstrapfile] do
+template node[:driveclient][:bootstrapfile] do
   source "bootstrap.json.erb"
   owner  "driveclient"
   group  "driveclient"

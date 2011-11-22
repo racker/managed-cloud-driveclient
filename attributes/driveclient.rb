@@ -1,6 +1,7 @@
-default[:jungledisk][:driveclient][:bootstrapfile] = "/etc/jungledisk/bootstrap.json"
-default[:jungledisk][:driveclient][:sleep] = 10
+default[:driveclient][:bootstrapfile] = "/etc/jungledisk/bootstrap.json"
+default[:driveclient][:sleep] = 10
 
-set_unless[:jungledisk][:driveclient][:apihostname] = "controlpanelsvc.drivesrvr.com"
-set_unless[:jungledisk][:driveclient][:username] = "username"
-set_unless[:jungledisk][:driveclient][:password] = "password"
+set_unless[:driveclient][:apihostname] = "api.drivesrvr.com"
+set_unless[:driveclient][:username] = "username"
+set_unless[:driveclient][:password] = "password"
+set_unless[:driveclient][:accountid] = "000000"
