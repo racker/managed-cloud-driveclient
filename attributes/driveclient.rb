@@ -1,5 +1,5 @@
 default[:driveclient][:bootstrapfile] = "/etc/jungledisk/bootstrap.json"
-default[:driveclient][:sleep] = 10
+default[:driveclient][:sleep] = 30
 
 set_unless[:driveclient][:apihostname] = "api.drivesrvr.com"
 set_unless[:driveclient][:username] = "username"

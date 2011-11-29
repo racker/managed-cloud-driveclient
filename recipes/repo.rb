@@ -25,7 +25,7 @@ when "redhat","centos"
   end
   repo.run_action(:create)
 when "ubuntu"
-  list = cookbook_file "/etc/apt/sources.d/driveclient.list" do
+  list = cookbook_file "/etc/apt/sources.list.d/driveclient.list" do
     source "driveclient.list"
     action :nothing
   end

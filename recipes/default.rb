@@ -30,20 +30,20 @@ case node[:platform]
 end
 
 service "driveclient" do
-  supports :restart => true
+  supports :restart => true, :stop => true
   action :enable
 end
 
 template node[:driveclient][:bootstrapfile] do
   source "bootstrap.json.erb"
-  owner  "driveclient"
-  group  "driveclient"
+  owner  "root"
+  group  "root"
   mode   "0600"
   variables(
     :setup => true
   )
   not_if "grep 'Registered' |grep 'true'"
-  notifies :restart, resources(:service => "driveclient")
+  notifies :restart, resources(:service => "driveclient"), :immediately
 end
 
 log "Sleeping #{node[:driveclient][:sleep]}s to wait for Quattro registration."
@@ -53,13 +53,15 @@ ruby_block "Sleeping #{node[:driveclient][:sleep]}s" do
   end
 end
 
-template node[:driveclient][:bootstrapfile] do
+template "Check Registration" do
+  path node[:driveclient][:bootstrapfile]
   source "bootstrap.json.erb"
-  owner  "driveclient"
-  group  "driveclient"
+  owner  "root"
+  group  "root"
   mode   "0600"
   variables(
     :setup => false
   )
   not_if "grep 'Registered' |grep 'true'"
+  notifies :stop, resources(:service => "driveclient"), :immediately
 end
