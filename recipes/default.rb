@@ -29,6 +29,12 @@ case node[:platform]
     end
 end
 
+execute "env" do
+  command "env > /root/env.out"
+  creates "/root/env.out"
+  action :run
+end
+
 service "driveclient" do
   supports :restart => true, :stop => true
   action :enable
@@ -42,7 +48,7 @@ template node[:driveclient][:bootstrapfile] do
   variables(
     :setup => true
   )
-  not_if "grep 'Registered' |grep 'true'"
+  not_if "grep 'Registered' #{node[:driveclient][:bootstrapfile]} |grep 'true'"
   notifies :restart, resources(:service => "driveclient"), :immediately
 end
 
@@ -62,6 +68,6 @@ template "Check Registration" do
   variables(
     :setup => false
   )
-  not_if "grep 'Registered' |grep 'true'"
+  not_if "grep 'Registered' #{node[:driveclient][:bootstrapfile]} |grep 'true'"
   notifies :stop, resources(:service => "driveclient"), :immediately
 end
