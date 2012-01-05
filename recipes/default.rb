@@ -30,7 +30,7 @@ case node[:platform]
 end
 
 service "driveclient" do
-  supports :restart => true, :stop => true
+  supports :restart => true, :stop => true, :status => true
   action :enable
 end
 
@@ -43,7 +43,7 @@ template node[:driveclient][:bootstrapfile] do
     :setup => true
   )
   not_if "grep 'Registered' #{node[:driveclient][:bootstrapfile]} |grep 'true'"
-  notifies :start, resources(:service => "driveclient"), :immediately
+  notifies :restart, resources(:service => "driveclient"), :immediately
 end
 
 log "Sleeping #{node[:driveclient][:sleep]}s to wait for Quattro registration."
