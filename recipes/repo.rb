@@ -25,6 +25,18 @@ when "redhat","centos"
   end
   repo.run_action(:create)
 when "ubuntu"
+  keyfile = cookbook_file "/tmp/repo-public.key" do
+    source "repo-public.key"
+    action :nothing
+  end
+  keyfile.run_action(:create)
+
+  aptkey = execute "apt-key add /tmp/repo-public.key" do
+    not_if "apt-key list | grep Rackspace"
+    action :nothing
+  end
+  aptkey.run_action(:run)
+
   list = cookbook_file "/etc/apt/sources.list.d/driveclient.list" do
     source "driveclient.list"
     action :nothing
