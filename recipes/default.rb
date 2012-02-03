@@ -53,15 +53,8 @@ ruby_block "Sleeping #{node[:driveclient][:sleep]}s" do
   end
 end
 
-template "Check Registration" do
-  path node[:driveclient][:bootstrapfile]
-  source "bootstrap.json.erb"
-  owner  "root"
-  group  "root"
-  mode   "0600"
-  variables(
-    :setup => false
-  )
+file node[:driveclient][:bootstrapfile] do
+  backup false
   not_if "grep 'Registered' #{node[:driveclient][:bootstrapfile]} |grep 'true'"
-  notifies :stop, resources(:service => "driveclient"), :immediately
+  action :delete
 end
