@@ -48,7 +48,7 @@ template node[:driveclient][:bootstrapfile] do
   notifies :restart, resources(:service => "driveclient"), :immediately
 end
 
-log "Sleeping #{node[:driveclient][:sleep]}s to wait for Quattro registration."
+log "Sleeping #{node[:driveclient][:sleep]}s to wait for RCBU registration."
 ruby_block "Sleeping #{node[:driveclient][:sleep]}s" do
   block do
     sleep(node[:driveclient][:sleep])
