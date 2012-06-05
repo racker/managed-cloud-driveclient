@@ -23,11 +23,13 @@ include_recipe "driveclient::repo"
 case node[:platform]
   when "redhat", "centos"
     include_recipe "yum-cron"
-    package "driveclient"
+    package "driveclient" do
+      action :upgrade
+    end
   when "ubuntu", "debian"
     include_recipe "unattended-upgrades"
     rackspace_apt "driveclient" do
-      action :install
+      action :upgrade
     end
 end
 
