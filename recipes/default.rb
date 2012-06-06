@@ -46,7 +46,7 @@ end
 
 service "driveclient" do
   supports :restart => true, :stop => true, :status => true
-  action :enable, :start
+  action [:enable, :start]
   subscribes :restart, resources(:template => node[:driveclient][:bootstrapfile]), :immediately
 end
 
