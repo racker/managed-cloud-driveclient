@@ -33,11 +33,6 @@ case node[:platform]
     end
 end
 
-service "driveclient" do
-  supports :restart => true, :stop => true, :status => true
-  action :enable
-end
-
 template node[:driveclient][:bootstrapfile] do
   source "bootstrap.json.erb"
   owner  "root"
@@ -47,7 +42,12 @@ template node[:driveclient][:bootstrapfile] do
     :setup => true
   )
   not_if "grep 'Registered' #{node[:driveclient][:bootstrapfile]} |grep 'true'"
-  notifies :restart, resources(:service => "driveclient"), :immediately
+end
+
+service "driveclient" do
+  supports :restart => true, :stop => true, :status => true
+  action :enable, :start
+  subscribes :restart, resources(:template => node[:driveclient][:bootstrapfile]), :immediately
 end
 
 log "Sleeping #{node[:driveclient][:sleep]}s to wait for RCBU registration."
