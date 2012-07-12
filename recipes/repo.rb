@@ -24,6 +24,13 @@ when "redhat","centos"
     action :nothing
   end
   repo.run_action(:create)
+
+  execute "yum -q makecache"
+  ruby_block "reload-internal-yum-cache" do
+    block do
+      Chef::Provider::Package::Yum::YumCache.instance.reload
+    end
+  end
 when "ubuntu"
   keyfile = cookbook_file "/tmp/repo-public.key" do
     source "repo-public.key"
