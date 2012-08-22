@@ -62,3 +62,10 @@ file node[:driveclient][:bootstrapfile] do
   not_if "grep 'Registered' #{node[:driveclient][:bootstrapfile]} |grep 'true'"
   action :delete
 end
+
+ruby_block "report_failed_registration" do
+  block do
+    raise "driveclient failed to register."
+  end
+  not_if "test -f #{node[:driveclient][:bootstrapfile]}"
+end
