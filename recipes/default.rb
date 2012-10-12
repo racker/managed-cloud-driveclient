@@ -16,21 +16,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-include_recipe "rackspace"
 include_recipe "driveclient::repo"
 
 case node[:platform]
   when "redhat", "centos"
     include_recipe "yum-cron"
-    package "driveclient" do
-      action :upgrade
-    end
   when "ubuntu", "debian"
     include_recipe "unattended-upgrades"
-    rackspace_apt "driveclient" do
-      action :upgrade
-    end
+end
+
+package "driveclient" do
+  action :upgrade
 end
 
 template node[:driveclient][:bootstrapfile] do
@@ -65,7 +61,7 @@ end
 
 ruby_block "report_failed_registration" do
   block do
-    raise "driveclient failed to register."
+    Chef::Application.fatal!("driveclient failed to register.")
   end
   not_if "test -f #{node[:driveclient][:bootstrapfile]}"
 end
