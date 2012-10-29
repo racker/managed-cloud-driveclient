@@ -18,7 +18,7 @@
 #
 include_recipe "driveclient::repo"
 
-if File.exists?("/root/.noupdate")
+if node.recipes.include?("managed-cloud") and File.exists?("/root/.noupdate")
   log "The Customer does not want the driveclient agent automatically installed."
 else
   case node[:platform]
