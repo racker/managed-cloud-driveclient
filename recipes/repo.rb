@@ -19,45 +19,20 @@
 
 case node[:platform]
 when "redhat","centos"
-  repo = cookbook_file "/etc/yum.repos.d/driveclient.repo" do
-    source "driveclient.repo"
-    action :nothing
-  end
-  repo.run_action(:create)
+  include_recipe "yum"
 
-  execute "yum -q makecache"
-  ruby_block "reload-internal-yum-cache" do
-    block do
-      Chef::Provider::Package::Yum::YumCache.instance.reload
-    end
+  yum_repository "drivesrvr" do
+    description "RCBU agent repo"
+    url "http://agentrepo.drivesrvr.com/redhat/"
+    action :add
   end
 when "ubuntu"
-  keyfile = cookbook_file "/tmp/repo-public.key" do
-    source "repo-public.key"
-    action :nothing
-  end
-  keyfile.run_action(:create)
+  include_recipe "apt"
 
-  aptkey = execute "apt-key add /tmp/repo-public.key" do
-    not_if "apt-key list | grep Rackspace"
-    action :nothing
-  end
-  aptkey.run_action(:run)
-
-  list = cookbook_file "/etc/apt/sources.list.d/driveclient.list" do
-    source "driveclient.list"
-    action :nothing
-  end
-  list.run_action(:create)
-
-  apt = execute "update apt" do
-    command "apt-get update"
-    ignore_failure true
-    action :nothing
-  end
-  begin
-    apt.run_action(:run)
-  rescue
-    Chef::Log.warn("apt-get exited with non-0")
+  apt_repository "driveclient" do
+    uri "[arch=amd64] http://agentrepo.drivesrvr.com/debian/"
+    distribution "serveragent"
+    components ["main"]
+    key "repo-public.key"
   end
 end
