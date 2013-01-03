@@ -68,4 +68,30 @@ else
     end
     not_if "test -f #{node[:driveclient][:bootstrapfile]}"
   end
+
+  case node[:platform]
+  when "redhat","centos"
+    cookbook_file "/etc/monit.d/driveclient.conf" do
+      source "driveclient.conf"
+      mode "0644"
+      owner "root"
+      group "root"
+      backup 0
+      only_if "test -d /etc/monit.d"
+    end
+  when "ubuntu","debian"
+    cookbook_file "/etc/monit/conf.d/driveclient.conf" do
+      source "driveclient.conf"
+      mode "0644"
+      owner "root"
+      group "root"
+      backup 0
+      only_if "test -d /etc/monit/conf.d"
+    end
+  end
+
+  execute "Restart monit" do
+    command "/etc/init.d/monit restart"
+    only_if "test -x /etc/init.d/monit"
+  end
 end
