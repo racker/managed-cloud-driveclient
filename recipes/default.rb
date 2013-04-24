@@ -21,9 +21,13 @@ include_recipe "driveclient::repo"
 if node.recipes.include?("managed-cloud") and File.exists?("/root/.noupdate")
   log "The Customer does not want the driveclient agent automatically installed."
 else
-
   package "driveclient" do
     action :upgrade
+  end
+
+  service "driveclient" do
+    supports :restart => true, :stop => true, :status => true
+    action [:enable, :start]
   end
 
   template node[:driveclient][:bootstrapfile] do
@@ -35,12 +39,7 @@ else
       :setup => true
     )
     not_if "grep 'Registered' #{node[:driveclient][:bootstrapfile]} |grep 'true'"
-  end
-
-  service "driveclient" do
-    supports :restart => true, :stop => true, :status => true
-    action [:enable, :start]
-    subscribes :restart, resources(:template => node[:driveclient][:bootstrapfile]), :immediately
+    notifies :restart, resources(:service => "driveclient"), :immediately
   end
 
   log "Sleeping #{node[:driveclient][:sleep]}s to wait for RCBU registration."
