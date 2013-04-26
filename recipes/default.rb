@@ -21,17 +21,15 @@ include_recipe "driveclient::repo"
 if node.recipes.include?("managed-cloud") and File.exists?("/root/.noupdate")
   log "The Customer does not want the driveclient agent automatically installed."
 else
-  case node[:platform]
-    when "redhat", "centos"
-      include_recipe "yum-cron"
-    when "ubuntu", "debian"
-      include_recipe "unattended-upgrades"
-  end
-  
   package "driveclient" do
     action :upgrade
   end
-  
+
+  service "driveclient" do
+    supports :restart => true, :stop => true, :status => true
+    action [:enable, :start]
+  end
+
   template node[:driveclient][:bootstrapfile] do
     source "bootstrap.json.erb"
     owner  "root"
@@ -41,30 +39,25 @@ else
       :setup => true
     )
     not_if "grep 'Registered' #{node[:driveclient][:bootstrapfile]} |grep 'true'"
+    notifies :restart, resources(:service => "driveclient"), :immediately
   end
-  
-  service "driveclient" do
-    supports :restart => true, :stop => true, :status => true
-    action [:enable, :start]
-    subscribes :restart, resources(:template => node[:driveclient][:bootstrapfile]), :immediately
-  end
-  
+
   log "Sleeping #{node[:driveclient][:sleep]}s to wait for RCBU registration."
   ruby_block "Sleeping #{node[:driveclient][:sleep]}s" do
     block do
       sleep(node[:driveclient][:sleep])
     end
   end
-  
+
   file node[:driveclient][:bootstrapfile] do
     backup false
     not_if "grep 'Registered' #{node[:driveclient][:bootstrapfile]} |grep 'true'"
     action :delete
   end
-  
+
   ruby_block "report_failed_registration" do
     block do
-      Chef::Application.fatal!("driveclient failed to register.")
+      raise "driveclient failed to register."
     end
     not_if "test -f #{node[:driveclient][:bootstrapfile]}"
   end
